@@ -39,29 +39,55 @@ router.use(function(req, res, next){	//declaring middleware
 
 //test if route is working (GET http://localhost:8080/api)
 router.get('/', function(req, res){
-	res.json({ message: 'hooray! welcome to bearrest api - get route' });
+	res.json({ message: 'hooray! welcome to bearrest api - GET route' });
 });
 
 
-//routes that end in '/bears'
+//on routes that end in '/bears'
 //-------------------------------
 
-//create a bear (POST http://localhost:8080/api/bears)
-.post(function(req,res){
+router.route('/bears')
 
-	var bear = new Bear();		//create new instance of the Bear model
-	bear.name = req.body.name;	//set bears name (from the request)
+	//create a bear (POST http://localhost:8080/api/bears)
+	.post(function(req,res){
 
-	//save bear and check for error 
-	bear.save(function(err){
-		if(err)
-			res.send(err);
+		var bear = new Bear();		//create new instance of the Bear model
+		bear.name = req.body.name;	//set bears name (from the request)
 
-		res.json({ message: 'Bear created!'});
+		//save bear and check for error 
+		bear.save(function(err){
+			if(err)
+				res.send(err);
+
+			res.json({ message: 'Bear created! - POST route'});
+		})
+
+	})
+
+	//get all the bears (GET http://localhost:8080/api/bears)
+	.get(function(req, res){
+		Bear.find(function(err, bears){
+			if(err)
+				res.send(err);
+
+			res.json(bears);
+		});
 	});
-	
 
-});
+
+//on routes that end in '/bears/:bear_id'
+//-------------------------------
+router.route('/bears/:bear_id')
+	
+	//get bear with id (GET http://localhost:8080/api/bears/:bear_id)
+	.get(function(req, res){
+		Bear.findById(req.params.bear_id, function(err, bear){
+			if(err)
+				res.send(err);
+			res.json(bear);
+		});
+	});
+
 
 
 //Register Routes -------------------------------------
